@@ -13,6 +13,7 @@
     #upcoming { display: block; margin: 0 auto; background-color: #E0E0E0; }
     #score    { color: blue; font-weight: bold; vertical-align: middle; }
     #rows     { color: blue; font-weight: bold; vertical-align: middle; }
+    #username { color: blue; font-weight: bold; vertical-align: middle; }
     #stats    { position: absolute; bottom: 0em; right: 1em; }
     @media screen and (min-width:   0px) and (min-height:   0px)  { #tetris { font-size: 0.75em; width: 250px; } #menu { width: 100px; height: 200px; } #upcoming { width:  50px; height:  50px; } #canvas { width: 100px; height: 200px; } } /* 10px chunks */
     @media screen and (min-width: 400px) and (min-height: 400px)  { #tetris { font-size: 1.00em; width: 350px; } #menu { width: 150px; height: 300px; } #upcoming { width:  75px; height:  75px; } #canvas { width: 150px; height: 300px; } } /* 15px chunks */
@@ -32,6 +33,7 @@
       <p><canvas id="upcoming"></canvas></p>
       <p>score <span id="score">00000</span></p>
       <p>rows <span id="rows">0</span></p>
+      <p>user <span id="username"></span></p>
     </div>
     <canvas id="canvas">
       Sorry, this example cannot be run because your browser does not support the &lt;canvas&gt; element
@@ -95,7 +97,8 @@
         score,         // the current score
         vscore,        // the currently displayed score (it catches up to score in small chunks - like a spinning slot machine)
         rows,          // number of completed rows in the current game
-        step;          // how long before current piece drops by 1 row
+        step,          // how long before current piece drops by 1 row
+        username;      // the user name
 
     //-------------------------------------------------------------------------
     // tetris pieces
@@ -242,7 +245,17 @@
     // GAME LOGIC
     //-------------------------------------------------------------------------
 
-    function play() { hide('start'); reset();      paused = false;  playing = true;  }
+    function play() { 
+      username = prompt("Please enter your name:");
+      if (!username) {
+        alert("User name cannot be empty. Please enter your name.");
+        return;
+      }
+      hide('start'); 
+      reset();      
+      paused = false;  
+      playing = true;  
+    }
     function pause() {show('start'); paused = true; playing = false;}
     function restart() {hide('start'); paused = false; playing = true;}
     function lose() { show('start'); setVisualScore(); playing = false; }
@@ -377,6 +390,7 @@
     function invalidateNext()     { invalid.next   = true; }
     function invalidateScore()    { invalid.score  = true; }
     function invalidateRows()     { invalid.rows   = true; }
+    function invalidateUsername() { invalid.username = true; }
 
     function draw() {
       ctx.save();
@@ -386,6 +400,7 @@
       drawNext();
       drawScore();
       drawRows();
+      drawUsername();
       ctx.restore();
     }
 
@@ -431,6 +446,13 @@
       if (invalid.rows) {
         html('rows', rows);
         invalid.rows = false;
+      }
+    }
+
+    function drawUsername() {
+      if (invalid.username) {
+        html('username', username);
+        invalid.username = false;
       }
     }
 
